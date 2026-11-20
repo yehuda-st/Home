@@ -27,7 +27,7 @@ for (const line of lines) {
   const textToVocalize = heading ? heading[2] : line;
   const result = await nakdan(textToVocalize, { genre: 'modern', timeoutMs: 120000 });
   if (!result.text || !/[\u0591-\u05c7]/u.test(result.text)) {
-    throw new Error('No niqqud returned for paragraph: ' + line.slice(0, 60));
+    // Some short answer options (e.g. "א. 50 ס״מ") cannot be vocalized.\n    // Preserve the original rather than failing the entire document.\n    console.warn('No niqqud returned; preserving original line: ' + line.slice(0, 100));\n    pointed.push(line);\n    continue;
   }
   // Remove morphological boundaries inside Hebrew words.
   const cleaned = result.text.replace(/(?<=[\u0590-\u05ff])\|(?=[\u0590-\u05ff])/gu, '');
