@@ -1,0 +1,33 @@
+name: Niqqud - Maoz Hanukkah quiz
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'מעוז/קריאה/nikud.mjs'
+      - 'מעוז/קריאה/חידון חנוכה לילדים - שאלות 1-20.md'
+      - '.github/workflows/maoz-reading-niqqud.yml'
+permissions:
+  contents: write
+jobs:
+  niqqud:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Nakdan client
+        run: npm install --no-save --no-package-lock dicta-nakdan@1.0.0
+      - name: Generate vocalized quiz
+        run: node 'מעוז/קריאה/nikud.mjs'
+      - name: Commit output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 'מעוז/קריאה/חידון חנוכה לילדים - שאלות 1-20 - מנוקד.md'
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate vocalized Hanukkah quiz"
+            git push
+          fi
